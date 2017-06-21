@@ -1,0 +1,29 @@
+      .console {
+                font-family: Consolas, monaco, monospace;
+                background: #000;
+                color: #008000;
+                height: 250px;
+                overflow-y:scroll;
+            }
+
+            .jumbotron {
+                background-image: url(hzlogo.png);
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                height:100px;
+	            width:100%;
+	            margin:10px;
+                background-color:#ffffff;
+                margin-right: 0px;
+                margin-left: 0px;
+                  opacity: .8;
+            }
+            .container {
+                margin-top:60px;
+                position: relative;
+            }
+
+
+            body {
+                background-color: #073784;
+            }
