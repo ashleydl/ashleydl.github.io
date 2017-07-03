@@ -1,21 +1,7 @@
-/**
- * Class Room - a room in an adventure game.
- *
- * This class is part of the "Zorld of Wuul" application. 
- * "Zorld of Wuul" is a very simple, text based adventure game.  
- *
- * A "Room" represents one location in the scenery of the game.  It is 
- * connected to other rooms via exits.  The exits are labelled north, 
- * east, south, west.  For each direction, the room stores a reference
- * to the neighboring room, or null if there is no exit in that direction.
- * 
- * @author  Michael Kölling, David J. Barnes and Bugslayer
- * @version 2017.03.30
- */
 class Room {
     description : string;
     inventory : Array<Item> = [];
-    furniture : Array<Furniture> = [];
+    roomObjects : Array<RoomObject> = [];
     northExit : Room;
     southExit : Room;
     eastExit : Room;
@@ -59,8 +45,23 @@ class Room {
     setInventory(item:Item): void{
         this.inventory.push(item);
     }
-    setFurniture(furniture:Furniture): void{
-        this.furniture.push(furniture);
+    addRoomObject(roomObject:RoomObject): void{
+        this.roomObjects.push(roomObject);
+    }
+    printExits(out:Printer){
+        out.print("Locaties: ");
+        if (this.northExit != null) {
+            out.print("noord ");
+        }
+        if (this.eastExit != null) {
+            out.print("oost ");
+        }
+        if (this.southExit != null) {
+            out.print("zuid ");
+        }
+        if (this.westExit != null) {
+            out.print("west ");
+        }
     }
 
 }

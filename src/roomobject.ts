@@ -1,4 +1,5 @@
-class Furniture {
+abstract class RoomObject {
+
     name: string
     protected description: string;
 
@@ -7,7 +8,6 @@ class Furniture {
         this.description = description;
     }
 
-    useFurniture(game: Game) : void{
-        game.out.println("Je gebruikte de " + this.name);
-    }
+    abstract use(game: Game) : void
+    
 }

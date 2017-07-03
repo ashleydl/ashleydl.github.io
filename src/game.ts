@@ -1,27 +1,10 @@
-/**
- * This class is part of the "Zorld of Wuul" application. 
- * "Zorld of Wuul" is a very simple, text based adventure game.  
- * 
- * Users can walk around some scenery. That's all. It should really be 
- * extended to make it more interesting!
- * 
- * To play this game, create an instance of this class and call the "play"
- * method.
- * 
- * This main class creates and initialises all the others: it creates all
- * rooms, creates the parser and starts the game.  It also evaluates and
- * executes the commands that the parser returns.
- * 
- * @author  Michael Kölling, David J. Barnes and Bugslayer
- * @version 2017.03.30
- */
 class Game {
-    parser : Parser;
-    out : Printer;
+    parser: Parser;
+    out: Printer;
     charInv: Array<Item> = [];
-    currentRoom : Room;
+    currentRoom: Room;
     items: Array<Item> = [];
-    isOn : boolean;
+    isOn: boolean;
 
     /**
      * Create the game and initialise its internal map.
@@ -39,42 +22,42 @@ class Game {
      * Create all the rooms and link their exits together.
      */
 
-    createRooms() : void {
+    createRooms(): void {
         // create the rooms
         let itroom = new Room("de ICT ruimte");
         let helpdesk = new Room("aan de receptie");
         let firstfloor = new Room("op de 1e verdieping");
         let groundfloor = new Room("op de begaande grond");
         let teacherroom = new Room("in de lerarenkamer");
-        let printroom = new Room ("bij de printer");
-        let interoffice = new Room ("bij de international office");
-        let atrium = new Room ("in het atrium");
-        let av = new Room ("AV dienst");
-        let basement = new Room ("de kelder");
-        
-      
-        
-        //items and furniture in rooms
-        av.setInventory(new Item("engelsportfolio", "Engelsportfolio"));
-        printroom.setFurniture(new CanonPrinter("canonPrinter", "Dit is een printer"));
-        printroom.setInventory(new Item("portfolio", "Voor ontwerpen"));
-        interoffice.setInventory(new Item("minor", "in het buitenland een minor volgen"));
-      
+        let printroom = new Room("bij de printer");
+        let interoffice = new Room("in de international office");
+        let atrium = new Room("in het atrium");
+        let av = new Room("AV dienst");
+        let basement = new Room("de kelder");
 
+        //items and roomobjects in rooms
+        av.addRoomObject(new avcamera("avcamera", "dit is de camera van de avdienst"));
+        printroom.addRoomObject(new CanonPrinter("printer", "Dit is een Canon Printer"));
+        helpdesk.setInventory(new Item("reservering", "om een lokaal te huren"));
+        interoffice.addRoomObject(new bureau("bureau", "hier vind je alles voor het buitenland", "Clarissa"));
 
         // initialise room exits
-        itroom.setExits(teacherroom, printroom, firstfloor, null);
-        helpdesk.setExits(null, av, basement , null);
-        basement.setExits(null, null, helpdesk , null);
-        firstfloor.setExits(itroom, interoffice, groundfloor, null);
-        interoffice.setExits(null, firstfloor, null, null);
-        groundfloor.setExits(null, helpdesk, atrium, null);
-        atrium.setExits(null, groundfloor, null, null);
         teacherroom.setExits(null, null, itroom, null);
-        av.setExits(null, helpdesk, null, null);
-        printroom.setExits(null, itroom, null, null);
-        
-       
+
+        itroom.setExits(teacherroom, printroom, firstfloor, null);
+        printroom.setExits(null, null, null, itroom);
+
+        firstfloor.setExits(itroom, interoffice, groundfloor, null);
+        interoffice.setExits(null, null, null, firstfloor);
+
+        groundfloor.setExits(firstfloor, helpdesk, null, atrium);
+
+        helpdesk.setExits(null, av, basement, groundfloor);
+        av.setExits(null, null, null, helpdesk);
+        basement.setExits(helpdesk, null, null, null);
+
+        atrium.setExits(null, groundfloor, null, null);
+
 
         // spawn player outside
         this.currentRoom = itroom;
@@ -84,25 +67,24 @@ class Game {
     /**
      * Print out the opening message for the player.
      */
-    printWelcome() : void {
+    printWelcome(): void {
         this.out.println();
         this.out.println("Welkom op het HZ");
-        this.out.println("Typ het woord ga en dan de richting waar je heen wilt");
-        this.out.println();
+        this.out.println("Om dit schooljaar te halen heb je bepaalde items nodig voor studiepunten.");
+        this.out.println("Commando's : ga, help, pak, inleveren");
         this.out.println("Je bent nu in " + this.currentRoom.description);
         this.out.println("Waar wil je heen? ");
-       
-        if(this.currentRoom.northExit != null) {
+
+        if (this.currentRoom.northExit != null) {
             this.out.println("noord: " + this.currentRoom.northExit.description);
         }
-        
-        if(this.currentRoom.eastExit != null) {
+        if (this.currentRoom.eastExit != null) {
             this.out.println("oost: " + this.currentRoom.eastExit.description);
         }
-        if(this.currentRoom.southExit != null) {
+        if (this.currentRoom.southExit != null) {
             this.out.println("zuid: " + this.currentRoom.southExit.description);
         }
-        if(this.currentRoom.westExit != null) {
+        if (this.currentRoom.westExit != null) {
             this.out.println("west: " + this.currentRoom.westExit.description);
         }
 
@@ -111,9 +93,9 @@ class Game {
 
     }
 
-    gameOver() : void {
+    gameOver(): void {
         this.isOn = false;
-        this.out.println("Je hebt je diploma niet kunnen halen, probeer het opnieuw. ");
+        this.out.println("De game is klaar");
         this.out.println("Druk F5 om game te herstarten");
     }
 
@@ -126,7 +108,7 @@ class Game {
      * @param params array containing all parameters
      * @return true, if this command quits the game, false otherwise.
      */
-    printError(params : string[]) : boolean {
+    printError(params: string[]): boolean {
         this.out.println("Typ help als je hulp nodig hebt. Begin elke zin met ga.");
         this.out.println();
         this.out.println("Je bent nu in " + this.currentRoom.description);
@@ -134,30 +116,75 @@ class Game {
         return false;
     }
 
-    /**
-     * Print out some help information.
-     * Here we print some stupid, cryptic message and a list of the 
-     * command words.
-     * 
-     * @param params array containing all parameters
-     * @return true, if this command quits the game, false otherwise.
-     * 
-     */
+    /**Grab the item or a message that there is no item */
 
+    getItem(params: string[]): boolean {
 
-    printHelp(params : string[]) : boolean {
-        if(params.length > 0) {
+        let removeIndex;
+        for (var item of this.currentRoom.inventory) {
+            if (item != null) {
+                this.charInv.push(item);
+                this.out.println("Je pakt op: " + item.name);
+                removeIndex = this.currentRoom.inventory.indexOf(item);
+                break;
+            }
+        }
+        if (removeIndex != null) {
+            this.currentRoom.inventory[removeIndex] = null;
+        }
+        else {
+            this.out.println("Je kunt hier niks vinden om op te pakken");
+        }
+        return false;
+
+    }
+
+    /*inventory*/
+    viewItems(params: string[]): boolean {
+
+        if (this.charInv.length > 0) {
+            for (var item of this.charInv) {
+                if (item != null) {
+                    this.out.println((this.charInv.indexOf(item) + 1) + ": " + item.name);
+                }
+            }
+        }
+        else {
+            this.out.println("Je hebt geen items.");
+        }
+        return false;
+
+    }
+
+    /** Print out some help information */
+
+    printHelp(params: string[]): boolean {
+        if (params.length > 0) {
             this.out.println("Help met wat?");
             return false;
         }
-         this.out.println();
-        this.out.println("Welkom op het HZ");
-        this.out.println("Neem een kijkje op de hogeschool zeeland.");
-        this.out.println("Typ help als je hulp nodig hebt.");
-        this.out.println();
+        this.out.println("Je probeert je schooljaar te halen.");
+        this.out.println("Haal je items op om je portfolio te halen.");
+        this.out.println("Commando's : ga, help, pak, gebruik, inventaris, vraag");
         this.out.println("Je bent nu in " + this.currentRoom.description);
-        this.out.print("Uitgangen: ");
-        return false;
+        this.out.println("Waar wil je heen? ");
+
+        if (this.currentRoom.northExit != null) {
+            this.out.println("noord: " + this.currentRoom.northExit.description);
+        }
+        if (this.currentRoom.eastExit != null) {
+            this.out.println("oost: " + this.currentRoom.eastExit.description);
+        }
+        if (this.currentRoom.southExit != null) {
+            this.out.println("zuid: " + this.currentRoom.southExit.description);
+        }
+        if (this.currentRoom.westExit != null) {
+            this.out.println("west: " + this.currentRoom.westExit.description);
+        }
+
+        this.out.println();
+        this.out.print(">");
+
     }
 
     /** 
@@ -167,10 +194,10 @@ class Game {
      * @param params array containing all parameters
      * @return true, if this command quits the game, false otherwise.
      */
-    goRoom(params : string[]) : boolean {
+    goRoom(params: string[]): boolean {
         console.log(this.currentRoom.inventory[0]);
-        if(params.length == 0) {
-           
+        if (params.length == 0) {
+
             // if there is no second word, we don't know where to go...
             this.out.println("Waarheen?");
             return;
@@ -181,77 +208,155 @@ class Game {
         // Try to leave current room.
         let nextRoom = null;
         switch (direction) {
-            case "noord" : 
+            case "noord":
                 nextRoom = this.currentRoom.northExit;
                 break;
-            case "oost" : 
+            case "oost":
                 nextRoom = this.currentRoom.eastExit;
                 break;
-            case "zuid" : 
+            case "zuid":
                 nextRoom = this.currentRoom.southExit;
                 break;
-            case "west" : 
+            case "west":
                 nextRoom = this.currentRoom.westExit;
                 break;
         }
 
-        
-
         if (nextRoom == null) {
-            this.out.println("Dit kan niet.");
+            this.out.println("Hier kun je niet heen, kies een andere optie.");
         }
         else {
-            this.currentRoom = nextRoom;
-            this.out.println("Je nieuwe locatie is: " + this.currentRoom.description);
-            for (var item of this.currentRoom.inventory)
-            {
+            this.changeRoom(nextRoom);
+        }
+        return false;
+    }
+
+
+    changeRoom(nextRoom: Room) {
+        this.currentRoom = nextRoom;
+        this.out.println("Je nieuwe locatie is: " + this.currentRoom.description);
+        for (var item of this.currentRoom.inventory) {
+            if (item != null) {
                 this.out.println(String("in deze kamer ligt " + item.name));
             }
-            for (var furniture of this.currentRoom.furniture)
-            {
-                this.out.println(String("in deze kamer staat " + furniture.name));
-            }
-            if(this.currentRoom.inventory[0] != null){
-            }
-            this.out.print("Locaties: ");
-            if(this.currentRoom.northExit != null) {
-                this.out.print("noord ");
-            }
-            if(this.currentRoom.eastExit != null) {
-                this.out.print("oost ");
-            }
-            if(this.currentRoom.southExit != null) {
-                this.out.print("zuid ");
-            }
-            if(this.currentRoom.westExit != null) {
-                this.out.print("west ");
-            }
-            this.out.println();
         }
-        return false;
+        for (var roomobject of this.currentRoom.roomObjects) {
+            this.out.println(String("in deze kamer staat " + roomobject.name));
+        }
+        this.currentRoom.printExits(this.out);
+        this.out.println();
     }
 
-    useFurniture(params : string[]) : boolean {
 
-         if(params.length == 0) {
-            // if there is no second word, we don't know where to go...
-            this.out.println("Wat gebruiken?");
-            return;
+      /*Using RoomObject to get an item*/
+    usecanonprinter(params: string[]): boolean {
+        for (let i = 0; i < this.charInv.length; i++) {
+            if (this.charInv[i].name == "minor") {
+        if (params.length == 0) {
+            this.out.println("Gebruik wat?");
+        }
+            }
+        
+        let roomObjectWord = params[0];
+
+        for (let roomObject of this.currentRoom.roomObjects) {
+            if (roomObject.name == roomObjectWord) {
+                roomObject.use(this);
+
+        if (this.currentRoom.eastExit != null) {
+            this.out.println("oost: " + this.currentRoom.eastExit.description);
+       
         }
 
-        let furnitureWord = params[0];
+        this.out.println();
+        this.out.print(">");
+                return false;
+               }
+        }
+        
+       {
+            this.out.println("Je kunt de printer nu niet gebruiken");
+            return false;
+        }
+    }
+}
 
-        for (var furniture of this.currentRoom.furniture)
-        {
-            if (furniture.name == furnitureWord)
-            {
-                furniture.useFurniture(this);
+    useavcamera(params: string[]): boolean {
+        for (let i = 0; i < this.charInv.length; i++) {
+            if (this.charInv[i].name == "sleutel") {
+        if (params.length == 0) {
+            this.out.println("Gebruik wat?");
+        }
             }
         }
+        
+        let roomObjectWord = params[0];
 
-        return false;
+        for (var roomObject of this.currentRoom.roomObjects) {
+            if (roomObject.name == roomObjectWord) {
+                roomObject.use(this);
+        if (this.currentRoom.westExit != null) {
+            this.out.println("west: " + this.currentRoom.westExit.description);
+        }
+                return false;
+               }
+        }
+     
+    }
+
+
+ useinterofficebureau(params: string[]): boolean {
+        for (let i = 0; i < this.charInv.length; i++) {
+            if (this.charInv[i].name == "Engels")
+             {
+        if (params.length == 0) {
+            this.out.println("Gebruik wat?");
+        }
+            }
+        }
+        
+        let roomObjectWord = params[0];
+
+        for (var roomObject of this.currentRoom.roomObjects) {
+            if (roomObject.name == roomObjectWord) {
+                roomObject.use(this);
+        if (this.currentRoom.westExit != null) {
+            this.out.println("west: " + this.currentRoom.westExit.description);
+        }
+                return false;
+               }
+        }
+     
     }
     
+
+    
+
+     useItem(params: string[]): boolean {
+        for (let i = 0; i < this.charInv.length; i++) {
+            if (this.currentRoom.description == "in de lerarenkamer" && this.charInv[i].name == "Portfolio") {
+                let teacherroom = new Room("in de lerarenkamer");
+                teacherroom.setInventory(this.items[1]);
+                this.out.println("Je levert je portfolio in");
+                this.out.println("Gefeliciteerd je hebt een voldoende!");
+                this.out.println("Je hebt het schooljaar overleefd en gaat door naar het volgende jaar.");
+                this.currentRoom = teacherroom;
+                return true;
+            }
+            else {
+                if(this.charInv[i].name == "appel" && this.currentRoom.description == "in de lerarenkamer"){
+                    this.out.println("Dankzij de ingeleverde appel krijg je een extra glimlach")
+                }
+            }
+        }
+        
+        {
+            this.out.println("Je hebt geen items, of levert ze niet op de juiste plaats in.");
+            return false;
+        }
+        
+    }
+
     /** 
      * "Quit" was entered. Check the rest of the command to see
      * whether we really quit the game.
@@ -259,8 +364,8 @@ class Game {
      * @param params array containing all parameters
      * @return true, if this command quits the game, false otherwise.
      */
-    quit(params : string[]) : boolean {
-        if(params.length > 0) {
+    quit(params: string[]): boolean {
+        if (params.length > 0) {
             this.out.println("Stop met wat?");
             return false;
         }

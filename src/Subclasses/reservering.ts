@@ -1,11 +1,9 @@
-class minor extends Item
+class reservering extends Item
 {
-    location: "london";
+    location: "avdienst";
 
     constructor(name: string, description: string, location: boolean) {
         super(name, description);
-        this.location="london";
-
+        this.location="avdienst";
     }
-
 }

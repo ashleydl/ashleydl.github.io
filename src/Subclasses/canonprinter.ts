@@ -1,12 +1,11 @@
-class CanonPrinter extends Furniture {
+class CanonPrinter extends RoomObject {
 
     constructor(name: string, description: string) {
-        super(name, description);
+        super(name, "Printer: " + description);
     }
 
-    public useFurniture(game: Game) : void {
-        game.out.println("Portfolio uitgeprint! Beschrijving: " + this.description);
-        game.charInv.push(new Item("Geprint Portfolio", "Vers uit de printer"));
-    
+    public use(game: Game) : void {
+        game.out.println("Portfolio uitgeprint! Hij ligt in de " + this.name);
+        game.currentRoom.inventory.push(new Item("Portfolio", "Vers uit de printer"));
     }
 }
