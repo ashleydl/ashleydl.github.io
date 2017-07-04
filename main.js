@@ -49,7 +49,7 @@ var Game = (function () {
         this.out.println();
         this.out.println("Welkom op het HZ");
         this.out.println("Om dit schooljaar te halen heb je bepaalde items nodig voor studiepunten.");
-        this.out.println("Commando's : ga, help, pak, inleveren");
+        this.out.println("Commando's : ga, help, pak, inleveren, gebruiken, vragen");
         this.out.println("Je bent nu in " + this.currentRoom.description);
         this.out.println("Waar wil je heen? ");
         if (this.currentRoom.northExit != null) {
@@ -195,8 +195,8 @@ var Game = (function () {
                 var roomObject = _a[_i];
                 if (roomObject.name == roomObjectWord) {
                     roomObject.use(this);
-                    if (this.currentRoom.eastExit != null) {
-                        this.out.println("oost: " + this.currentRoom.eastExit.description);
+                    if (this.currentRoom.westExit != null) {
+                        this.out.println("west: " + this.currentRoom.eastExit.description);
                     }
                     this.out.println();
                     this.out.print(">");
@@ -419,7 +419,7 @@ var avcamera = (function (_super) {
     avcamera.prototype.use = function (game) {
         game.out.println("Engels gesprek opgenomen! Dankzij de " + this.name);
         game.currentRoom.inventory.push(new Item("Engels", "opgenomen met de camera"));
-        game.out.println("Je kunt nu goed engels spreken, haal bij de international office je minorplaats op.");
+        game.out.println("Je kunt nu goed engels spreken, pak de video op en haal bij de international office je minorplaats op.");
     };
     return avcamera;
 }(RoomObject));
@@ -434,19 +434,6 @@ var CanonPrinter = (function (_super) {
     };
     return CanonPrinter;
 }(RoomObject));
-var engels = (function (_super) {
-    __extends(engels, _super);
-    function engels(name, description, location) {
-        var _this = _super.call(this, name, description) || this;
-        _this.location = "london";
-        return _this;
-    }
-    engels.prototype.use = function (game) {
-        game.out.println("Portfolio uitgeprint! Hij ligt in de " + this.name);
-        game.currentRoom.inventory.push(new Item("minor", "dankzij engels"));
-    };
-    return engels;
-}(Item));
 var FoodItem = (function (_super) {
     __extends(FoodItem, _super);
     function FoodItem(name, description, calorien) {

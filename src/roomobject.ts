@@ -1,4 +1,4 @@
-abstract class RoomObject {
+ class RoomObject {
 
     name: string
     protected description: string;
@@ -7,7 +7,4 @@ abstract class RoomObject {
         this.name = name;
         this.description = description;
     }
-
-    abstract use(game: Game) : void
-    
-}
+ }
