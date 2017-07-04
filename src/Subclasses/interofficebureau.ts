@@ -1,7 +1,7 @@
 class bureau extends RoomObject {
 
     constructor(name: string, description: string, teacher: string) {
-        super(teacher, "Clarissa " + description + name);
+        super(teacher, "Clarissa " + description  + name);
     }
 
     public use(game: Game) : void {

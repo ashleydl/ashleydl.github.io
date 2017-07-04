@@ -71,7 +71,7 @@ class Game {
         this.out.println();
         this.out.println("Welkom op het HZ");
         this.out.println("Om dit schooljaar te halen heb je bepaalde items nodig voor studiepunten.");
-        this.out.println("Commando's : ga, help, pak, inleveren");
+        this.out.println("Commando's : ga, help, pak, inleveren, gebruiken, vragen");
         this.out.println("Je bent nu in " + this.currentRoom.description);
         this.out.println("Waar wil je heen? ");
 
@@ -263,8 +263,8 @@ class Game {
             if (roomObject.name == roomObjectWord) {
                 roomObject.use(this);
 
-        if (this.currentRoom.eastExit != null) {
-            this.out.println("oost: " + this.currentRoom.eastExit.description);
+        if (this.currentRoom.westExit != null) {
+            this.out.println("west: " + this.currentRoom.eastExit.description);
        
         }
 
